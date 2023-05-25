@@ -1,5 +1,34 @@
+
+#include<stdio.h>
+#include<string.h>
+
+#define HMG_FALSE 0
+#define HMG_TRUE 1
+#define HMG_THERMAL 0
+#define HMG_ELASTIC 3
+#define STR_BUFFER_SIZE 1000
+#define HMG_3D 3
+#define HMG_2D 2
+#define MAX_NUM_MAT 1000
+
+int m_analysis_flag;
+double m_elem_size;
+double m_tol;
+int m_nmaxit;
+int m_nx, m_ny, m_nz;
+int m_dim_flag;
+int m_mesh_refinement;
+int m_nmat;
+short int mat_id;
+double *props;
+int* props_keys;
+int m_nelem = 10;
+int* elem_material_map;
+
+typedef unsigned int map_value;
+
 //------------------------------------------------------------------------------
-logical readData(char * filename){
+int readData(char * filename){
 	char str[STR_BUFFER_SIZE];
 	unsigned short int mat_id;
 	FILE * file;
@@ -63,21 +92,7 @@ logical readData(char * filename){
 	return HMG_TRUE;
 }
 //------------------------------------------------------------------------------
-logical readMaterialMap(char * filename){
-	// Check file format before reading
-	unsigned long int str_len = strlen(filename);
-	if (str_len < 3)
-		return HMG_FALSE;
-	if (!strcmp(&filename[str_len-3],".nf"))
-		return readMaterialMapNF(filename);
-	if (!strcmp(&filename[str_len-4],".raw"))
-		return readMaterialMapRAW(filename);
-
-	printf("\n\n HERE \n\n");
-	return HMG_FALSE;
-}
-//------------------------------------------------------------------------------
-logical readMaterialMapNF(char * filename){
+int readMaterialMapNF(char * filename){
 	map_value buffer;
 	unsigned int i;
 	char str[STR_BUFFER_SIZE];
@@ -97,7 +112,7 @@ logical readMaterialMapNF(char * filename){
 	return HMG_TRUE;
 }
 //------------------------------------------------------------------------------
-logical readMaterialMapRAW(char * filename){
+int readMaterialMapRAW(char * filename){
 	map_value buffer;
 	unsigned int i, j, k;
 	unsigned int rows = m_ny-1;
@@ -132,3 +147,29 @@ logical readMaterialMapRAW(char * filename){
 	return HMG_FALSE;
 }
 //------------------------------------------------------------------------------
+int readMaterialMap(char * filename){
+	// Check file format before reading
+	unsigned long int str_len = strlen(filename);
+	if (str_len < 3)
+		return HMG_FALSE;
+	if (!strcmp(&filename[str_len-3],".nf"))
+		return readMaterialMapNF(filename);
+	if (!strcmp(&filename[str_len-4],".raw"))
+		return readMaterialMapRAW(filename);
+
+	printf("\n\n HERE \n\n");
+	return HMG_FALSE;
+}
+//------------------------------------------------------------------------------
+
+int main() {
+	
+	// int a = readData("teste.nf");
+	// int b = readMaterialMapNF("teste.nf");
+	int c = readMaterialMapRAW("teste.raw");
+
+	// printf("%d %d %d", a, b, c);
+	printf("%d", c);
+
+	return 0;
+}
