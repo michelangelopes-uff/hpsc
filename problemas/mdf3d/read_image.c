@@ -181,6 +181,10 @@ void printMaterialMap() {
 	int cols = m_ny - 1;
 	int index = -1;
 
+	printf("Dimensões: (x, y, z) = (%d, %d, %d)\n\n", rows, cols, slices);
+
+	printf("Matriz:\n");
+
 	for(int k = 0; k < slices; k++) {
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < cols; j++){
