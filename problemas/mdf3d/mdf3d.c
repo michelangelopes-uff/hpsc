@@ -18,14 +18,30 @@ int mdf(int connect[5][5], double cc[5][5], int nx, int ny, int nz){
 
     printf("criando matriz A\n");
 
+    int e_t; //top
+    int e_d; //down
+    int e_r; //right
+    int e_l; //left
+    int e_f; //forward
+    int e_b; //backward
+
     for(int e = 0; e < nn; e++) {
+        e_r = e + ny;
+        e_t = e - 1;
+        e_l = e - ny;
+        e_d = e + 1;
+        e_f = e - nn;
+        e_b = e + nn;
+
         if(cc[e][0] == 0) {
             A[e][e] = -6;
-            for(int i = 0; i < 6; i++) {
-                int c_ei = connect[e][i];
-
-                A[e][c_ei] = bloco[i];
-            }
+            
+            A[e][e_r] = 1;
+            A[e][e_t] = 1;
+            A[e][e_l] = 1;
+            A[e][e_d] = 1;
+            A[e][e_f] = 1;
+            A[e][e_b] = 1;
         }
         else {
             A[e][e] = 1;
