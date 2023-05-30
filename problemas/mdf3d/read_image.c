@@ -57,12 +57,10 @@ int readData(char * filename){
 				if (m_nz){
 					m_nelem = m_nx * m_ny * m_nz;
 					m_dim_flag = HMG_3D;
-					m_nz++;
 				} else {
 					m_nelem = m_nx * m_ny;
 					m_dim_flag = HMG_2D;
 				}
-				m_nx++;m_ny++;
 
 			} else if (!strcmp(str,"\%refinement")){
 				fscanf(file, "%i", &m_mesh_refinement);
@@ -126,11 +124,11 @@ int readMaterialMapNF(char * filename){
 int readMaterialMapRAW(char * filename){
 	map_value buffer;
 	unsigned int i, j, k;
-	unsigned int rows = m_ny-1;
-	unsigned int cols = m_nx-1;
+	unsigned int rows = m_ny;
+	unsigned int cols = m_nx;
 	unsigned int slices;
 	if (m_dim_flag == HMG_3D)
-		slices = m_nz-1;
+		slices = m_nz;
 	else
 		slices = 1;
 	char str[STR_BUFFER_SIZE];
