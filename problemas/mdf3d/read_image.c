@@ -197,14 +197,3 @@ void printMaterialMap() {
 		}
 	}
 }
-//------------------------------------------------------------------------------
-int main() {
-	
-	int a = readData("teste.nf");
-	// int b = readMaterialMapNF("teste.nf");
-	int c = readMaterialMapRAW("teste.raw");
-
-	printMaterialMap();
-
-	return 0;
-}
