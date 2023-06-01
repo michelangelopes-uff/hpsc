@@ -62,6 +62,8 @@ int readData(char * filename){
 					m_dim_flag = HMG_2D;
 				}
 
+				m_nx++; m_ny++; m_nz++;
+
 			} else if (!strcmp(str,"\%refinement")){
 				fscanf(file, "%i", &m_mesh_refinement);
 			} else if (!strcmp(str,"\%number_of_materials")){

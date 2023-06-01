@@ -5,6 +5,11 @@
 #include <stdbool.h>
 #include "read_image.c"
 
+/*
+Para compilar: gcc mdf3d.c -o mdf3d -lm
+Para rodar: ./mdf3d exemplos/teste_3x3
+*/
+
 // Variáveis Globais
 // float* cor = NULL;
 // int* connect = NULL;
@@ -343,12 +348,18 @@ int mdf(int nn, int connect[nn][6], float cc[nn][2], double deltaT){
     return 0;
 }
 
-void main()
+void main(int argc, char** argv)
 {
     printf("Construindo Modelo \n");
-    int aa, bb;
-    aa = readData("test.nf");
-    bb = readMaterialMapRAW("test.raw");
+
+    char nfFilename[25];
+    char rawFilename[25];
+
+    strcat(strcpy(nfFilename, argv[1]), ".nf");
+    strcat(strcpy(rawFilename, argv[1]), ".raw");
+
+    readData(nfFilename);
+    readMaterialMapRAW(rawFilename);
     // m_nx, m_ny e m_nz já podem ser usadas!
     printMaterialMap();
 
