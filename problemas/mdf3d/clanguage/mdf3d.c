@@ -19,10 +19,6 @@ Para rodar: ./mdf3d exemplos/teste_3x3
 
 double dot_product(double *m, double *n, int nn, int aux)
 {   
-    // printf("\nCHAMADA\n");
-    // for (int ii = 0; ii < nn; ii++){
-    //     printf("m[%i] = %f \n", ii, m[ii]);
-    // }
     double res = 0;
     for (int i = aux; i < nn + (aux - 1); i++)
     {
@@ -75,12 +71,12 @@ int criaConnect(int nn, int connect[nn][6], float cc[nn][2], int cor[m_nmat], do
 				material_map[index01] = elem_material_map[index];
                 index01 += 1;
 			}
-			printf("\n");
+			// printf("\n");
 		}
 
-		if(k + 1 == slices - 1) {
-			printf("\n\n");
-		}
+		// if(k + 1 == slices - 1) {
+		// 	printf("\n\n");
+		// }
 	}
 
     for (int e = 1; e <= dim; e++)
@@ -163,6 +159,7 @@ int criaConnect(int nn, int connect[nn][6], float cc[nn][2], int cor[m_nmat], do
         }
         indConnect += 1;
     }
+
 }
 
 void circshift(int *arr, int size, int shift)
@@ -194,7 +191,7 @@ void criaCoords(int nn, int connect[nn][6], float cc[nn][2], float deltaT)
 {
     int dim = (m_nx-1) * (m_ny-1) * (m_nz-1);
     int cor[m_nmat];
-    printf("\nm_nmat = %i\n", m_nmat);
+    // printf("\nm_nmat = %i\n", m_nmat);
     memset(cor, 0, sizeof(cor));
     float nz;
     int count = 0;
@@ -223,7 +220,32 @@ void criaCoords(int nn, int connect[nn][6], float cc[nn][2], float deltaT)
 
     float dT = deltaT / nz;
 
-    criaConnect(nn, connect, cc, cor, dT, nz);
+    // if (isContorno)
+    //     {
+    //         r = (e - 1) % xy;
+    //         if (r == 0 && e != 1)
+    //         {
+    //             layerAtual -= 1;
+    //         }
+    //         cc[e-1][0] = 1;
+    //         cc[e-1][1] = cor[material_map[indConnect]] + floor(dT) * layerAtual;
+    //     }
+    //     indConnect += 1;
+    // printf("n = %i\n\n\n", nn);
+    // criaConnect(nn, connect, cc, cor, dT, nz);
+    // for (int i=0; i<nn; i++){
+    //     printf("cc[%i,:] = [%f, %f]\n", i, cc[i][0], cc[i][1]);
+    //     // cc[i][0] = 0;
+    //     // cc[i][1] = 0;
+    // }
+    // cc[0][0] = 1;
+    // cc[0][1] = 100;
+    // cc[1][0] = 1;
+    // cc[1][1] = 100;
+    // cc[2][0] = 1;
+    // cc[2][1] = 100;
+
+
 }
 
 void gaussseidel(int nn, double A[nn][nn], double b[nn], double x[nn]) {
@@ -236,17 +258,16 @@ void gaussseidel(int nn, double A[nn][nn], double b[nn], double x[nn]) {
 
         for(int i = 0; i < nn; i++) {
             s1 = dot_product(A[i], x_new, nn, 0);
-
             s2 = dot_product(A[i], x, nn, 1); 
             //printf("\nb = %f  s1 = %f  s2 = %f \n", b[i], s1, s2);
 
             x_new[i] = (b[i] - (s1 + s2)) / A[i][i];
-            printf("\n x_new[%i] = %f\n", i, x_new[i]);
+            // printf("\n x_new[%i] = %f\n", i, x_new[i]);
         }
         if(is_approx(x, x_new, nn)){
             for (int ii = 0; ii < nn; ii++){
                 x[ii] = x_new[ii];
-                printf("\n x[%i] = %f ", ii, x[ii]);
+                // printf("\n x[%i] = %f ", ii, x[ii]);
             }
             break;
             }
@@ -276,70 +297,53 @@ void outputRes(int nn, int nx, int ny, double x[nn]){
 int mdf(int nn, int connect[nn][6], float cc[nn][2], double deltaT){
     double A[nn][nn];
     double b[nn];
-    for (int ii = 0; ii < nn; ii++){
-            printf(" cc[%i,0] = %f cc[%i,1] = %f \n", ii, cc[ii][0], ii, cc[ii][1]);
-    }
-
+    int e;
+    int e_t; //top
+    int e_d; //down
+    int e_r; //right
+    int e_l; //left
+    int e_f; //forward
+    int e_b; //backward
+    int inBoundary = 0;
+    
     memset(A, 0, sizeof(A));
     memset(b, 0, sizeof(b));
 
-    int bloco[] = {1, 1, 1, 1, 1, 1};
-
     printf("criando matriz A\n");
 
-    for(int e = 0; e < nn; e++) {
-        if(cc[e][0] == 0) {
-            A[e][e] = -6;
-            for(int i = 0; i < 6; i++) {
-                int c_ei = connect[e][i];
+    // Internal Elements
+    for(int k = 1; k < m_nz-1; k++) {
+        for(int j = 1; j < m_nx-1; j++) {
+            for(int i = 1; i < m_ny-1; i++) {
+                e = i + m_ny*j + m_nx*m_ny*k;
+                e_r = e + m_ny;
+                e_t = e - 1;
+                e_l = e - m_ny;
+                e_d = e + 1;
+                e_f = e - m_nx*m_ny;
+                e_b = e + m_nx*m_ny;
 
-                A[e][c_ei] = bloco[i];
+                A[e][e] = -6;
+                A[e][e_r] = 1;
+                A[e][e_t] = 1;
+                A[e][e_l] = 1;
+                A[e][e_d] = 1;
+                A[e][e_f] = 1;
+                A[e][e_b] = 1;
             }
         }
-        else {
+    }
+    for (e = 1; e<nn; e++){
+        if (cc[e][0]==1) {
             A[e][e] = 1;
             b[e] = cc[e][1];
         }
     }
 
-    // int e_t; //top
-    // int e_d; //down
-    // int e_r; //right
-    // int e_l; //left
-    // int e_f; //forward
-    // int e_b; //backward
-
-    // for(int e = 0; e < nn; e++) {
-    //     e_r = e + ny;
-    //     e_t = e - 1;
-    //     e_l = e - ny;
-    //     e_d = e + 1;
-    //     e_f = e - nn;
-    //     e_b = e + nn;
-
-    //     if(cc[e][0] == 0) {
-    //         A[e][e] = -6;
-            
-    //         A[e][e_r] = 1;
-    //         A[e][e_t] = 1;
-    //         A[e][e_l] = 1;
-    //         A[e][e_d] = 1;
-    //         A[e][e_f] = 1;
-    //         A[e][e_b] = 1;
-    //     }
-    //     else {
-    //         A[e][e] = 1;
-    //         b[e] = cc[e][1];
-    //     }
-    // }
-
     printf("\ncalculando gaussseidel");
     double x[nn];
     gaussseidel(nn, A, b, x); // TODO: usar ve
-    printf("\nfim do calculo");
-    for (int ii = 0; ii < nn; ii++){
-        printf(" x[%i] = %f\n", ii, x[ii]);
-    }
+    printf("\nfim do calculo\n");
 
     float layers = (m_nz-1)/2;
 
@@ -360,14 +364,16 @@ void main(int argc, char** argv)
 
     readData(nfFilename);
     readMaterialMapRAW(rawFilename);
+
     // m_nx, m_ny e m_nz já podem ser usadas!
-    printMaterialMap();
+    // printMaterialMap();
 
     int nx, ny, nz, nMat, cor;
     double deltaT = 10;
-    int dim = (m_nx-1) * (m_ny-1) * (m_nz-1);
+    nz = 3;
+    int dim = (m_nx) * (m_ny) * (nz);
     int layers = (nz - 1) / 2;
-    printf("\n x : %i \n", m_nx);
+    // printf("\n x : %i \n", m_nx);
 
     int connect[dim][6];
     float cc[dim][2];
@@ -377,12 +383,7 @@ void main(int argc, char** argv)
     printf("\nConstruindo Connect \n");
     criaCoords(dim, connect, cc, deltaT);
     printf("\nImprimindo Connect: \n");
-    for (int ii = 0; ii < dim; ii++){
-        for(int jj = 0; jj < 6; jj++){
-            printf(" %i ", connect[ii][jj]);
-        }
-        printf(" \n ");
-    }
+    
     printf("\nRealizando análise \n");
-    mdf(dim, connect, cc, deltaT);
+    mdf(dim,  connect,  cc, deltaT);
 }
