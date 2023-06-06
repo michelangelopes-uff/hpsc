@@ -62,8 +62,6 @@ int readData(char * filename){
 					m_dim_flag = HMG_2D;
 				}
 
-				m_nx++; m_ny++; m_nz++;
-
 			} else if (!strcmp(str,"\%refinement")){
 				fscanf(file, "%i", &m_mesh_refinement);
 			} else if (!strcmp(str,"\%number_of_materials")){
@@ -176,9 +174,9 @@ int readMaterialMap(char * filename){
 }
 //------------------------------------------------------------------------------
 void printMaterialMap() {
-	int slices = m_nz - 1;
-	int rows = m_nx - 1;
-	int cols = m_ny - 1;
+	int slices = m_nz;
+	int rows = m_nx;
+	int cols = m_ny;
 	int index = -1;
 
 	printf("Dimensões: (x, y, z) = (%d, %d, %d)\n\n", rows, cols, slices);
